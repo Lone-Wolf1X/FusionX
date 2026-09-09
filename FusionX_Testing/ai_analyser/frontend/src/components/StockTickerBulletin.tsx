@@ -8,20 +8,36 @@ interface TickerItem {
   change_pct: number;
 }
 
+const DEFAULT_STOCKS: TickerItem[] = [
+  { symbol: 'NABIL', name: 'Nabil Bank Limited', ltp: 624.0, change_pct: 1.8 },
+  { symbol: 'NTC', name: 'Nepal Telecom', ltp: 910.5, change_pct: -0.5 },
+  { symbol: 'GBIME', name: 'Global IME Bank', ltp: 245.0, change_pct: 2.1 },
+  { symbol: 'HDL', name: 'Himalayan Distillery', ltp: 1680.0, change_pct: -1.2 },
+  { symbol: 'CHCL', name: 'Chilime Hydropower', ltp: 495.0, change_pct: 0.9 },
+  { symbol: 'SHIVM', name: 'Shivam Cements', ltp: 580.0, change_pct: 3.4 },
+  { symbol: 'CIT', name: 'Citizen Investment Trust', ltp: 2150.0, change_pct: -0.8 },
+  { symbol: 'EBL', name: 'Everest Bank Limited', ltp: 610.0, change_pct: 1.5 },
+  { symbol: 'NICA', name: 'NIC Asia Bank', ltp: 512.0, change_pct: -1.1 },
+  { symbol: 'UPPER', name: 'Upper Tamakoshi', ltp: 230.0, change_pct: 0.4 },
+  { symbol: 'HBL', name: 'Himalayan Bank', ltp: 215.0, change_pct: 1.2 },
+  { symbol: 'PCBL', name: 'Prime Commercial Bank', ltp: 228.0, change_pct: -0.3 },
+];
+
 export default function StockTickerBulletin({ onSelect }: { onSelect: (symbol: string) => void }) {
-  const [stocks, setStocks] = useState<TickerItem[]>([]);
+  const [stocks, setStocks] = useState<TickerItem[]>(DEFAULT_STOCKS);
 
   useEffect(() => {
     fetch('http://localhost:8001/api/scan')
       .then((r) => r.json())
-      .then((data: any[]) => {
-        if (data && data.length) {
+      .then((data: any) => {
+        const rawList = Array.isArray(data) ? data : data?.stocks || [];
+        if (rawList && rawList.length) {
           setStocks(
-            data.map((s) => ({
+            rawList.map((s: any) => ({
               symbol: s.symbol,
               name: s.name || s.symbol,
-              ltp: s.ltp,
-              change_pct: s.change_pct,
+              ltp: typeof s.ltp === 'number' ? s.ltp : parseFloat(s.ltp || 0),
+              change_pct: typeof s.change_pct === 'number' ? s.change_pct : parseFloat(s.change_pct || 0),
             }))
           );
         }
