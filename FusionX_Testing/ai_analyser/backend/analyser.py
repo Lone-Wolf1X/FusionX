@@ -141,6 +141,15 @@ def score_stock(df: pd.DataFrame) -> dict:
 
 # ─── Main Public Functions ─────────────────────────────────────────────────────
 
+def _get_stockmap() -> dict:
+    import json, os
+    stockmap_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../resources/nepse_stockmap.json"))
+    try:
+        with open(stockmap_path) as f:
+            return json.load(f)
+    except:
+        return {}
+
 def run_full_scan(sectors: list[str] = None) -> list[dict]:
     """Scans stocks and returns analysis results."""
     from data import get_available_symbols, get_symbols_by_sectors
@@ -151,16 +160,7 @@ def run_full_scan(sectors: list[str] = None) -> list[dict]:
         symbols = get_available_symbols()
         
     results = []
-    
-    # We also want the names and sectors, let's load from DB or stockmap
-    import json, os
-    stockmap_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../resources/nepse_stockmap.json"))
-    stockmap = {}
-    try:
-        with open(stockmap_path) as f:
-            stockmap = json.load(f)
-    except:
-        pass
+    stockmap = _get_stockmap()
         
     for sym in symbols:
         df = load_stock_df(sym)
@@ -186,15 +186,7 @@ def run_full_scan(sectors: list[str] = None) -> list[dict]:
 
 def analyse_stock(symbol: str) -> Optional[dict]:
     """Analyse a single stock and return its summary."""
-    import json, os
-    stockmap_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../resources/nepse_stockmap.json"))
-    stockmap = {}
-    try:
-        with open(stockmap_path) as f:
-            stockmap = json.load(f)
-    except:
-        pass
-    
+    stockmap = _get_stockmap()
     df = load_stock_df(symbol)
     if df is None or len(df) < 50:
         return None
@@ -262,6 +254,7 @@ def get_stock_detail(symbol: str, period: int = 365) -> Optional[dict]:
     
     analysis = score_stock(df)
     
+    stockmap = _get_stockmap()
     info = stockmap.get(symbol, {})
     
     return {

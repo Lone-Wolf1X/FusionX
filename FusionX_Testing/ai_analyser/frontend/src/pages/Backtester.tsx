@@ -7,7 +7,6 @@ import {
   Play, Target, TrendingUp, TrendingDown, Activity, AlertTriangle,
   CheckCircle, BarChart2, Zap, Info
 } from 'lucide-react';
-import { getSectors } from '../services/api';
 import { useEffect } from 'react';
 
 const BASE_URL = 'http://localhost:8001';
@@ -52,10 +51,10 @@ function MetricCard({ label, value, sub, color, icon: Icon }: any) {
   );
 }
 
-function TradeRow({ trade, i }: { trade: any; i: number }) {
+function TradeRow({ trade, i, onSelect }: { trade: any; i: number; onSelect: (s: string) => void }) {
   const isWin = trade.result === 'win';
   return (
-    <tr>
+    <tr onClick={() => onSelect(trade.symbol)} style={{ cursor: 'pointer' }}>
       <td style={{ fontWeight: 600, color: 'var(--text-dim)', fontSize: 12 }}>{i + 1}</td>
       <td>
         <div className="mono" style={{ fontWeight: 800, color: 'var(--blue)', fontSize: 13 }}>{trade.symbol}</div>
@@ -387,7 +386,7 @@ export default function Backtester({ onSelect }: { onSelect: (s: string) => void
                   </thead>
                   <tbody>
                     {result.trades.map((t: any, i: number) => (
-                      <TradeRow key={i} trade={t} i={i} />
+                      <TradeRow key={i} trade={t} i={i} onSelect={onSelect} />
                     ))}
                   </tbody>
                 </table>
