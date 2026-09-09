@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FusionX TMS</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <!-- Boxicons for icons -->
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <nav class="sidebar">
+            <div class="logo-container">
+                <div class="logo-icon"><i class='bx bx-trending-up'></i></div>
+                <h2>FusionX</h2>
+            </div>
+            <ul class="nav-links">
+                <li class="active" data-tab="dashboard"><i class='bx bx-grid-alt'></i> Dashboard</li>
+                <li data-tab="watchlist"><i class='bx bx-list-ul'></i> Watchlist</li>
+                <li data-tab="portfolio"><i class='bx bx-briefcase-alt-2'></i> Portfolio</li>
+                <li data-tab="orders"><i class='bx bx-receipt'></i> Orders</li>
+            </ul>
+        </nav>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <header class="top-header">
+                <div class="market-overview">
+                    <div class="index-card">
+                        <span class="index-name">NEPSE</span>
+                        <span class="index-value down">2,014.50 <i class='bx bx-down-arrow-alt'></i></span>
+                        <span class="index-change down">-12.40 (-0.61%)</span>
+                    </div>
+                    <div class="index-card">
+                        <span class="index-name">Sensitive</span>
+                        <span class="index-value down">385.20 <i class='bx bx-down-arrow-alt'></i></span>
+                        <span class="index-change down">-3.10 (-0.80%)</span>
+                    </div>
+                </div>
+                <div class="header-actions">
+                    <div class="server-status" id="server-status">
+                        <span class="status-indicator"></span>
+                        <span class="status-text">Connected</span>
+                    </div>
+                    <div class="user-profile">
+                        <div class="avatar">AP</div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Dashboard Tab -->
+            <section id="dashboard" class="tab-content active">
+                <div class="dashboard-grid">
+                    <div class="glass-card full-width">
+                        <div class="card-header">
+                            <h3>Market Summary</h3>
+                        </div>
+                        <div class="summary-stats">
+                            <div class="stat-box">
+                                <span class="label">Total Turnover</span>
+                                <span class="value">Rs 2.45 Arba</span>
+                            </div>
+                            <div class="stat-box">
+                                <span class="label">Total Traded Shares</span>
+                                <span class="value">6,245,120</span>
+                            </div>
+                            <div class="stat-box">
+                                <span class="label">Total Transactions</span>
+                                <span class="value">45,120</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="glass-card">
+                        <div class="card-header">
+                            <h3>Backend Status</h3>
+                        </div>
+                        <div id="backend-status-content" class="status-content">
+                            Loading...
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Watchlist Tab -->
+            <section id="watchlist" class="tab-content">
+                <div class="split-layout">
+                    <div class="glass-card list-pane">
+                        <div class="card-header">
+                            <h3>Watchlist</h3>
+                            <input type="text" id="symbol-search" placeholder="Search Symbol..." class="search-input">
+                        </div>
+                        <div class="table-container">
+                            <table class="data-table" id="watchlist-table">
+                                <thead>
+                                    <tr>
+                                        <th>Symbol</th>
+                                        <th>LTP</th>
+                                        <th>Change</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Populated by JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="glass-card detail-pane">
+                        <div class="card-header">
+                            <h3 id="selected-symbol">Select a Stock</h3>
+                            <div class="trade-buttons">
+                                <button class="btn btn-buy" onclick="openOrderModal('buy')">Buy</button>
+                                <button class="btn btn-sell" onclick="openOrderModal('sell')">Sell</button>
+                            </div>
+                        </div>
+                        <div class="market-depth">
+                            <h4>Market Depth (Level 2)</h4>
+                            <div class="depth-tables">
+                                <table class="depth-table bid">
+                                    <thead>
+                                        <tr>
+                                            <th>Orders</th>
+                                            <th>Qty</th>
+                                            <th>Bid</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="bid-body">
+                                        <!-- Mocked -->
+                                    </tbody>
+                                </table>
+                                <table class="depth-table ask">
+                                    <thead>
+                                        <tr>
+                                            <th>Ask</th>
+                                            <th>Qty</th>
+                                            <th>Orders</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="ask-body">
+                                        <!-- Mocked -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Portfolio Tab -->
+            <section id="portfolio" class="tab-content">
+                <div class="glass-card full-width">
+                    <div class="card-header">
+                        <h3>My Holdings</h3>
+                    </div>
+                    <div class="table-container">
+                        <table class="data-table" id="portfolio-table">
+                            <thead>
+                                <tr>
+                                    <th>Symbol</th>
+                                    <th>Quantity</th>
+                                    <th>WACC</th>
+                                    <th>LTP</th>
+                                    <th>Total Value</th>
+                                    <th>Unrealized P/L</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Populated by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Orders Tab -->
+            <section id="orders" class="tab-content">
+                <div class="glass-card full-width">
+                    <div class="card-header">
+                        <h3>Order Book</h3>
+                        <button class="btn btn-primary" onclick="fetchOrders()"><i class='bx bx-refresh'></i> Refresh</button>
+                    </div>
+                    <div class="table-container">
+                        <table class="data-table" id="orders-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Symbol</th>
+                                    <th>Type</th>
+                                    <th>Quantity</th>
+                                    <th>Price</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Populated by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- Order Modal -->
+    <div id="order-modal" class="modal-overlay">
+        <div class="modal-content glass-card">
+            <div class="modal-header">
+                <h3 id="modal-title">Place Order</h3>
+                <button class="close-btn" onclick="closeOrderModal()"><i class='bx bx-x'></i></button>
+            </div>
+            <div class="modal-body">
+                <form id="order-form">
+                    <input type="hidden" id="order-type">
+                    <div class="form-group">
+                        <label>Symbol</label>
+                        <input type="text" id="order-symbol" readonly class="input-readonly">
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Quantity</label>
+                            <input type="number" id="order-qty" required min="10" placeholder="10">
+                        </div>
+                        <div class="form-group">
+                            <label>Price</label>
+                            <input type="number" id="order-price" required step="0.1" placeholder="0.0">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Total Amount</label>
+                        <div class="total-amount" id="order-total">Rs 0.00</div>
+                    </div>
+                    <button type="submit" class="btn btn-full" id="submit-order-btn">Submit Order</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

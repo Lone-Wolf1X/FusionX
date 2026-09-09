@@ -1,0 +1,12 @@
+{
+  "name": "ai-analyser",
+  "version": "1.0.0",
+  "scripts": {
+    "start": "concurrently \"npm run start-frontend\" \"npm run start-backend\"",
+    "start-frontend": "cd frontend && npm run dev -- --port 5174",
+    "start-backend": "cd backend && source ../../../venv/bin/activate && python main.py"
+  },
+  "devDependencies": {
+    "concurrently": "^10.0.5"
+  }
+}

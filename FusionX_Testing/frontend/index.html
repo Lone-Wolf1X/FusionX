@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FusionX Trade Management System</title>
+    <!-- Google Fonts: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <nav class="sidebar">
+            <div class="logo-container">
+                <div class="logo-icon">FX</div>
+                <h2>FusionX</h2>
+            </div>
+            <ul class="nav-links">
+                <li class="active"><a href="#" id="nav-dashboard">Dashboard</a></li>
+                <li><a href="#" id="nav-backtesting">Backtesting</a></li>
+                <li><a href="#" id="nav-screener">AI Screener</a></li>
+                <li><a href="#" id="nav-portfolio">Portfolio</a></li>
+            </ul>
+        </nav>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <header class="top-header">
+                <div class="header-title">
+                    <h1>Dashboard</h1>
+                    <p>Welcome back to your trading desk.</p>
+                </div>
+                <div class="server-status" id="server-status">
+                    <span class="status-indicator"></span>
+                    <span class="status-text">Connecting...</span>
+                </div>
+            </header>
+
+            <section class="dashboard-grid">
+                <!-- Data Card -->
+                <div class="glass-card stat-card">
+                    <h3>Market Status</h3>
+                    <div class="stat-value" id="market-status">Closed</div>
+                    <p class="stat-subtext">Next open at 11:00 AM</p>
+                </div>
+
+                <div class="glass-card stat-card">
+                    <h3>Total NEPSE Stocks</h3>
+                    <div class="stat-value" id="total-stocks">--</div>
+                    <p class="stat-subtext">Loaded in Database</p>
+                </div>
+
+                <div class="glass-card stat-card">
+                    <h3>Backend API</h3>
+                    <div class="stat-value" id="api-status">Pending</div>
+                    <p class="stat-subtext">FastAPI Server</p>
+                </div>
+            </section>
+
+            <!-- Chart/Workspace Placeholder -->
+            <section class="workspace-area">
+                <div class="glass-card main-workspace">
+                    <div class="workspace-header">
+                        <h2>Market Overview</h2>
+                        <div class="actions">
+                            <button class="btn btn-primary">Refresh Data</button>
+                        </div>
+                    </div>
+                    <div class="chart-container" id="chart-container">
+                        <p class="placeholder-text">Chart will be rendered here...</p>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
