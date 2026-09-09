@@ -48,6 +48,15 @@ def compute_portfolio_analytics(symbols: list[str]) -> dict:
                 "value": round(float(corr_matrix.loc[sym_a, sym_b]), 3)
             })
 
+    import json, os
+    stockmap_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../resources/nepse_stockmap.json"))
+    stockmap = {}
+    try:
+        with open(stockmap_path) as f:
+            stockmap = json.load(f)
+    except:
+        pass
+
     # ── Per-Stock Sharpe Ratio (1-year) ─────────────────────────────
     sharpe_per_stock = []
     for sym, rets in aligned.items():
@@ -56,8 +65,10 @@ def compute_portfolio_analytics(symbols: list[str]) -> dict:
         annualized_sharpe = (mean_ret / std_ret) * np.sqrt(252) if std_ret > 0 else 0
         ann_return = mean_ret * 252 * 100
         ann_vol = std_ret * np.sqrt(252) * 100
+        info = stockmap.get(sym, {})
         sharpe_per_stock.append({
             "symbol": sym,
+            "name": info.get("name", sym),
             "sharpe_ratio": round(annualized_sharpe, 2),
             "annual_return_pct": round(ann_return, 2),
             "annual_volatility_pct": round(ann_vol, 2),
@@ -86,8 +97,10 @@ def compute_portfolio_analytics(symbols: list[str]) -> dict:
         b = avg_win / avg_loss  # win/loss ratio
         kelly_pct = win_prob - ((1 - win_prob) / b) if b > 0 else 0
         kelly_pct = max(0, min(kelly_pct, 0.25))  # cap at 25% safety
+        info = stockmap.get(sym, {})
         kelly_suggestions.append({
             "symbol": sym,
+            "name": info.get("name", sym),
             "kelly_pct": round(kelly_pct * 100, 1),
             "win_rate": round(win_prob * 100, 1),
             "win_loss_ratio": round(b, 2),

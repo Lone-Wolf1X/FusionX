@@ -57,7 +57,10 @@ function TradeRow({ trade, i }: { trade: any; i: number }) {
   return (
     <tr>
       <td style={{ fontWeight: 600, color: 'var(--text-dim)', fontSize: 12 }}>{i + 1}</td>
-      <td className="mono" style={{ fontWeight: 800, color: 'var(--blue)', fontSize: 13 }}>{trade.symbol}</td>
+      <td>
+        <div className="mono" style={{ fontWeight: 800, color: 'var(--blue)', fontSize: 13 }}>{trade.symbol}</div>
+        {trade.name && <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>{trade.name}</div>}
+      </td>
       <td style={{ fontSize: 12 }}>{trade.entry_date}</td>
       <td style={{ fontSize: 12 }}>{trade.exit_date}</td>
       <td className="mono" style={{ fontSize: 12 }}>Rs {trade.entry_price}</td>

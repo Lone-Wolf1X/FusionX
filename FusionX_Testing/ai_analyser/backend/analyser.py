@@ -262,8 +262,12 @@ def get_stock_detail(symbol: str, period: int = 365) -> Optional[dict]:
     
     analysis = score_stock(df)
     
+    info = stockmap.get(symbol, {})
+    
     return {
         "symbol": symbol,
+        "name": info.get("name", symbol),
+        "sector": info.get("sector", "Other"),
         "total_records": len(df),
         "from_date": str(df["date"].iloc[0].date()),
         "to_date": str(df["date"].iloc[-1].date()),
@@ -294,6 +298,7 @@ def get_heatmap_data() -> dict:
             sectors[sector] = {"stocks": [], "avg_score": 0, "avg_change": 0}
         sectors[sector]["stocks"].append({
             "symbol": stock["symbol"],
+            "name": stock.get("name", stock["symbol"]),
             "score": stock["score"],
             "change_pct": stock["change_pct"],
             "ltp": stock["ltp"],

@@ -5,7 +5,7 @@ interface SectorData {
   avg_score: number;
   avg_change: number;
   count: number;
-  stocks: { symbol: string; score: number; change_pct: number; ltp: number }[];
+  stocks: { symbol: string; name?: string; score: number; change_pct: number; ltp: number }[];
 }
 
 export default function Heatmap({ onSelect }: { onSelect: (s: string) => void }) {
@@ -114,7 +114,10 @@ export default function Heatmap({ onSelect }: { onSelect: (s: string) => void })
                   .sort((a, b) => b.score - a.score)
                   .map(s => (
                     <tr key={s.symbol} onClick={() => onSelect(s.symbol)}>
-                      <td className="symbol-cell">{s.symbol}</td>
+                      <td>
+                        <div className="mono" style={{ fontWeight: 800, color: 'var(--blue)', fontSize: 13.5 }}>{s.symbol}</div>
+                        {s.name && <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>{s.name}</div>}
+                      </td>
                       <td>
                         <span className="mono" style={{
                           color: s.score >= 70 ? '#10B981' : s.score >= 50 ? '#F59E0B' : '#EF4444',

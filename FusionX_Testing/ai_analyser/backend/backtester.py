@@ -91,6 +91,15 @@ def run_backtest(
     Example: "rsi < 35 and macd > macd_signal and close > ema50"
     """
     
+    import json, os
+    stockmap_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../resources/nepse_stockmap.json"))
+    stockmap = {}
+    try:
+        with open(stockmap_path) as f:
+            stockmap = json.load(f)
+    except:
+        pass
+
     cash = initial_capital
     portfolio_value_history = []
     all_trades = []
@@ -142,9 +151,11 @@ def run_backtest(
                 proceeds = pos["shares"] * current_price
                 profit = proceeds - pos["cost"]
                 profit_pct = (profit / pos["cost"]) * 100
+                info = stockmap.get(sym, {})
                 cash += proceeds
                 all_trades.append({
                     "symbol": sym,
+                    "name": info.get("name", sym),
                     "entry_date": str(pos["entry_date"].date()) if hasattr(pos["entry_date"], "date") else str(pos["entry_date"]),
                     "exit_date": str(date.date()) if hasattr(date, "date") else str(date),
                     "entry_price": round(pos["entry_price"], 2),
@@ -200,8 +211,10 @@ def run_backtest(
             proceeds = pos["shares"] * last_price
             profit = proceeds - pos["cost"]
             profit_pct = (profit / pos["cost"]) * 100
+            info = stockmap.get(sym, {})
             all_trades.append({
                 "symbol": sym,
+                "name": info.get("name", sym),
                 "entry_date": str(pos["entry_date"].date()) if hasattr(pos["entry_date"], "date") else str(pos["entry_date"]),
                 "exit_date": "Open",
                 "entry_price": round(pos["entry_price"], 2),

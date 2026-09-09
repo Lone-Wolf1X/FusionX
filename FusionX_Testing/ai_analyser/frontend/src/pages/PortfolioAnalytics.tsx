@@ -219,7 +219,10 @@ export default function PortfolioAnalytics({ onSelect }: { onSelect: (s: string)
               <tbody>
                 {result.sharpe_per_stock.map((s: any) => (
                   <tr key={s.symbol} onClick={() => onSelect(s.symbol)}>
-                    <td className="mono" style={{ fontWeight: 800, color: 'var(--blue)', fontSize: 13.5 }}>{s.symbol}</td>
+                    <td>
+                      <div className="mono" style={{ fontWeight: 800, color: 'var(--blue)', fontSize: 13.5 }}>{s.symbol}</div>
+                      {s.name && <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>{s.name}</div>}
+                    </td>
                     <td>
                       <span className={`chip ${s.sharpe_ratio >= 1 ? 'chip-buy' : s.sharpe_ratio >= 0.5 ? 'chip-watch' : 'chip-sell'}`}>
                         {s.sharpe_ratio}
@@ -247,7 +250,8 @@ export default function PortfolioAnalytics({ onSelect }: { onSelect: (s: string)
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: 10 }}>
               {result.kelly.map((k: any) => (
                 <div key={k.symbol} className="rr-item" onClick={() => onSelect(k.symbol)} style={{ cursor: 'pointer' }}>
-                  <div className="mono" style={{ fontWeight: 800, color: 'var(--blue)', fontSize: 14, marginBottom: 6 }}>{k.symbol}</div>
+                  <div className="mono" style={{ fontWeight: 800, color: 'var(--blue)', fontSize: 14 }}>{k.symbol}</div>
+                  {k.name && <div style={{ fontSize: 11, color: 'var(--text-muted)', marginBottom: 6 }}>{k.name}</div>}
                   <div style={{ fontSize: 22, fontWeight: 800, fontFamily: 'var(--font-mono)', color: k.kelly_pct >= 15 ? 'var(--green)' : k.kelly_pct >= 5 ? 'var(--amber)' : 'var(--text-muted)' }}>
                     {k.kelly_pct}%
                   </div>
