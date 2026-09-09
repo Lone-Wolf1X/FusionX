@@ -37,15 +37,6 @@ interface StockData {
   analysis: Analysis;
 }
 
-const PERIODS = [
-  { label: '1M', days: 30 },
-  { label: '3M', days: 90 },
-  { label: '6M', days: 180 },
-  { label: '1Y', days: 365 },
-  { label: '2Y', days: 730 },
-  { label: 'MAX', days: 9999 },
-];
-
 function MetricRow({ label, value, sub, color }: { label: string; value: string; sub?: string; color?: string }) {
   return (
     <div className="metric-row">
@@ -71,8 +62,17 @@ function getAIVerdict(analysis: Analysis): string {
 export default function StockDetail({ symbol }: { symbol: string }) {
   const [data, setData] = useState<StockData | null>(null);
   const [loading, setLoading] = useState(true);
-  const [period, setPeriod] = useState(9999);
   const [inWatchlist, setInWatchlist] = useState(false);
+  const [showSignals, setShowSignals] = useState(false);
+
+  useEffect(() => {
+    setLoading(true);
+    getStock(symbol, 9999)
+      .then(setData)
+      .catch(console.error)
+      .finally(() => setLoading(false));
+  }, [symbol]);
+
   // Check watchlist
   useEffect(() => {
     fetch('http://localhost:8001/api/watchlist')
