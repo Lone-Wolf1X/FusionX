@@ -873,3 +873,72 @@ body {
 
 .topbar-stat .label { color: var(--text-dim); font-weight: 500; }
 .topbar-stat .val { font-family: var(--font-mono); font-weight: 700; color: var(--text-main); }
+
+/* ─── Floating Stock Ticker Bulletin ─────────────────────────────────────────── */
+.ticker-bulletin-wrap {
+  display: flex;
+  align-items: center;
+  background: var(--bg-card);
+  border-bottom: 1px solid var(--border);
+  height: 38px;
+  overflow: hidden;
+  position: relative;
+  user-select: none;
+  z-index: 100;
+}
+
+.ticker-bulletin-badge {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 0 16px;
+  background: var(--bg-base);
+  border-right: 1px solid var(--border);
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--blue);
+  letter-spacing: 0.8px;
+  z-index: 20;
+  height: 100%;
+  white-space: nowrap;
+  box-shadow: 4px 0 12px rgba(0,0,0,0.05);
+}
+
+.ticker-bulletin-container {
+  flex: 1;
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.ticker-bulletin-track {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  white-space: nowrap;
+  animation: tickerMarquee 50s linear infinite;
+}
+
+.ticker-bulletin-track:hover {
+  animation-play-state: paused;
+}
+
+.ticker-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  padding: 4px 10px;
+  border-radius: 6px;
+  transition: background var(--transition-fast);
+}
+
+.ticker-item:hover {
+  background: var(--bg-base);
+}
+
+@keyframes tickerMarquee {
+  0% { transform: translateX(0%); }
+  100% { transform: translateX(-50%); }
+}

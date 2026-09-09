@@ -10,6 +10,7 @@ import Watchlist from './pages/Watchlist';
 import Backtester from './pages/Backtester';
 import PortfolioAnalytics from './pages/PortfolioAnalytics';
 import SearchBar from './components/SearchBar';
+import StockTickerBulletin from './components/StockTickerBulletin';
 import { Clock } from 'lucide-react';
 
 const PAGE_TITLES: Record<string, string> = {
@@ -67,6 +68,9 @@ export default function App() {
             </div>
           </div>
         </header>
+
+        {/* Live Floating Stock Ticker Bulletin */}
+        <StockTickerBulletin onSelect={handleSelect} />
 
         <main className="page-content">
           <div className="page-fade" key={currentPage}>
