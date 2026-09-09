@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { getStock } from '../services/api';
 import { createChart, ColorType, CrosshairMode, CandlestickSeries, LineSeries, HistogramSeries } from 'lightweight-charts';
-import { TrendingUp, TrendingDown, BarChart2, Activity, Star, StarOff, Shield, AlertTriangle, Target, ChevronDown, ChevronUp } from 'lucide-react';
+import { TrendingUp, TrendingDown, BarChart2, Activity, Star, StarOff, Shield, AlertTriangle, Target, ChevronDown, ChevronUp, Calendar } from 'lucide-react';
 
 interface Signal { type: string; text: string; }
 
@@ -368,6 +368,14 @@ export default function StockDetail({ symbol }: { symbol: string }) {
           <MetricRow label="BB Upper / Lower" value={`${a?.bb_upper?.toFixed(0) ?? '--'} / ${a?.bb_lower?.toFixed(0) ?? '--'}`} />
           <MetricRow label="Volume Ratio" value={`${a?.volume_ratio?.toFixed(2)}x avg`} color={a?.volume_ratio > 2 ? 'var(--green)' : undefined} />
           <MetricRow label="ATR (14)" value={`Rs ${a?.atr?.toFixed(2) ?? '--'}`} sub="Average daily volatility range" />
+        </div>
+
+        {/* Listing & History Info */}
+        <div className="card">
+          <div className="card-title"><Calendar size={13} /> Listing & History</div>
+          <MetricRow label="First Traded Date" value={data.from_date || '--'} sub="Earliest record in database" />
+          <MetricRow label="Latest Trade Date" value={data.to_date || '--'} />
+          <MetricRow label="Trading History" value={`${data.total_records} days`} sub={data.total_records < 252 ? '🌱 Recently Listed / New IPO' : '🏛 Established Stock'} color={data.total_records < 252 ? 'var(--amber)' : undefined} />
         </div>
 
         {/* Signals */}
