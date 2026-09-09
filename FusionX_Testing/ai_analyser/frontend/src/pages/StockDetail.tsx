@@ -71,7 +71,7 @@ function getAIVerdict(analysis: Analysis): string {
 export default function StockDetail({ symbol }: { symbol: string }) {
   const [data, setData] = useState<StockData | null>(null);
   const [loading, setLoading] = useState(true);
-  const [period, setPeriod] = useState(365);
+  const [period, setPeriod] = useState(9999);
   const [inWatchlist, setInWatchlist] = useState(false);
   const [showSignals, setShowSignals] = useState(false);
   const chartRef = useRef<HTMLDivElement>(null);

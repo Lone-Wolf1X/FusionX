@@ -201,16 +201,16 @@ def analyse_stock(symbol: str) -> Optional[dict]:
         **analysis,
     }
 
-def get_stock_detail(symbol: str, period: int = 365) -> Optional[dict]:
+def get_stock_detail(symbol: str, period: int = 9999) -> Optional[dict]:
     df = load_stock_df(symbol)
-    if df is None:
+    if df is None or df.empty:
         return None
     
-    df_recent = df.tail(period).copy()
-    df_recent = df_recent.sort_values("date").drop_duplicates(subset=["date"]).reset_index(drop=True)
+    # Sort and remove duplicates on full dataframe
+    df = df.sort_values("date").drop_duplicates(subset=["date"]).reset_index(drop=True)
     
-    # Calculate all indicators for the period
-    close = df_recent["close"]
+    # Calculate all indicators on full history for maximum precision
+    close = df["close"]
     rsi = calc_rsi(close)
     macd_line, signal, histogram = calc_macd(close)
     ema9 = calc_ema(close, 9)
@@ -218,8 +218,16 @@ def get_stock_detail(symbol: str, period: int = 365) -> Optional[dict]:
     ema50 = calc_ema(close, 50)
     bb_upper, bb_mid, bb_lower, _ = calc_bollinger(close)
     
+    # Slice recent rows based on period (if period < total records)
+    if period and period > 0 and period < len(df):
+        df_recent = df.tail(period).copy().reset_index(drop=True)
+        start_idx = len(df) - period
+    else:
+        df_recent = df.copy().reset_index(drop=True)
+        start_idx = 0
+    
     def s(v):
-        return None if (v is None or (isinstance(v, float) and np.isnan(v))) else round(v, 2)
+        return None if (v is None or (isinstance(v, float) and np.isnan(v))) else round(float(v), 2)
     
     ohlcv = []
     for _, row in df_recent.iterrows():
@@ -233,23 +241,23 @@ def get_stock_detail(symbol: str, period: int = 365) -> Optional[dict]:
         })
     
     indicators = {
-        "rsi": [{"time": str(df_recent["date"].iloc[i].date()), "value": s(rsi.iloc[i])} 
-                for i in range(len(df_recent)) if not np.isnan(rsi.iloc[i])],
+        "rsi": [{"time": str(df_recent["date"].iloc[i].date()), "value": s(rsi.iloc[start_idx + i])} 
+                for i in range(len(df_recent)) if not np.isnan(rsi.iloc[start_idx + i])],
         "macd": [{"time": str(df_recent["date"].iloc[i].date()), 
-                  "macd": s(macd_line.iloc[i]), 
-                  "signal": s(signal.iloc[i]),
-                  "histogram": s(histogram.iloc[i])}
-                 for i in range(len(df_recent)) if not np.isnan(macd_line.iloc[i])],
-        "ema9": [{"time": str(df_recent["date"].iloc[i].date()), "value": s(ema9.iloc[i])} 
-                 for i in range(len(df_recent)) if not np.isnan(ema9.iloc[i])],
-        "ema21": [{"time": str(df_recent["date"].iloc[i].date()), "value": s(ema21.iloc[i])} 
-                  for i in range(len(df_recent)) if not np.isnan(ema21.iloc[i])],
-        "ema50": [{"time": str(df_recent["date"].iloc[i].date()), "value": s(ema50.iloc[i])} 
-                  for i in range(len(df_recent)) if not np.isnan(ema50.iloc[i])],
-        "bb_upper": [{"time": str(df_recent["date"].iloc[i].date()), "value": s(bb_upper.iloc[i])} 
-                     for i in range(len(df_recent)) if not np.isnan(bb_upper.iloc[i])],
-        "bb_lower": [{"time": str(df_recent["date"].iloc[i].date()), "value": s(bb_lower.iloc[i])} 
-                     for i in range(len(df_recent)) if not np.isnan(bb_lower.iloc[i])],
+                  "macd": s(macd_line.iloc[start_idx + i]), 
+                  "signal": s(signal.iloc[start_idx + i]),
+                  "histogram": s(histogram.iloc[start_idx + i])}
+                 for i in range(len(df_recent)) if not np.isnan(macd_line.iloc[start_idx + i])],
+        "ema9": [{"time": str(df_recent["date"].iloc[i].date()), "value": s(ema9.iloc[start_idx + i])} 
+                 for i in range(len(df_recent)) if not np.isnan(ema9.iloc[start_idx + i])],
+        "ema21": [{"time": str(df_recent["date"].iloc[i].date()), "value": s(ema21.iloc[i + start_idx])} 
+                  for i in range(len(df_recent)) if not np.isnan(ema21.iloc[start_idx + i])],
+        "ema50": [{"time": str(df_recent["date"].iloc[i].date()), "value": s(ema50.iloc[start_idx + i])} 
+                  for i in range(len(df_recent)) if not np.isnan(ema50.iloc[start_idx + i])],
+        "bb_upper": [{"time": str(df_recent["date"].iloc[i].date()), "value": s(bb_upper.iloc[start_idx + i])} 
+                     for i in range(len(df_recent)) if not np.isnan(bb_upper.iloc[start_idx + i])],
+        "bb_lower": [{"time": str(df_recent["date"].iloc[i].date()), "value": s(bb_lower.iloc[start_idx + i])} 
+                     for i in range(len(df_recent)) if not np.isnan(bb_lower.iloc[start_idx + i])],
     }
     
     analysis = score_stock(df)
