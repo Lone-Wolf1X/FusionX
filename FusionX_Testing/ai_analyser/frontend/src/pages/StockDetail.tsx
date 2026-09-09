@@ -59,7 +59,7 @@ function MetricRow({ label, value, sub, color }: { label: string; value: string;
 }
 
 function getAIVerdict(analysis: Analysis): string {
-  const { score, rsi, macd, macd_signal, ema50, ema200, volume_ratio, ltp, support, resistance } = analysis;
+  const { score, rsi, macd, macd_signal, ema50, ema200, volume_ratio } = analysis;
   const trend = ema50 > ema200 ? 'bullish long-term trend (EMA 50 > 200)' : 'bearish long-term structure (EMA 50 < 200)';
   const rsiView = rsi < 30 ? 'RSI is oversold — a potential bounce opportunity' : rsi > 70 ? 'RSI is overbought — watch for a pullback' : 'RSI is neutral';
   const macdView = macd > macd_signal ? 'MACD shows bullish momentum' : 'MACD signal is bearish';
@@ -136,7 +136,7 @@ export default function StockDetail({ symbol }: { symbol: string }) {
       ema21.setData(data.indicators.ema21);
     }
     if (data.indicators.ema50?.length) {
-      const ema50 = chart.addSeries(LineSeries, { color: '#0284C7', lineWidth: 1.5, title: 'EMA50' });
+      const ema50 = chart.addSeries(LineSeries, { color: '#0284C7', lineWidth: 2, title: 'EMA50' });
       ema50.setData(data.indicators.ema50);
     }
     // Bollinger Bands
@@ -164,7 +164,7 @@ export default function StockDetail({ symbol }: { symbol: string }) {
     // MACD panel
     if (macdRef.current && data.indicators.macd?.length) {
       const macdChart = createChart(macdRef.current, { ...opts, height: 90 });
-      const macdLine = macdChart.addSeries(LineSeries, { color: '#0284C7', lineWidth: 1.5 });
+      const macdLine = macdChart.addSeries(LineSeries, { color: '#0284C7', lineWidth: 2 });
       macdLine.setData(data.indicators.macd.map((d: any) => ({ time: d.time, value: d.macd })));
       const sigLine = macdChart.addSeries(LineSeries, { color: '#DC2626', lineWidth: 1 });
       sigLine.setData(data.indicators.macd.map((d: any) => ({ time: d.time, value: d.signal })));
