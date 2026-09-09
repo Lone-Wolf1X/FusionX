@@ -4,7 +4,7 @@ import {
   createChart, ColorType, CandlestickSeries, LineSeries, AreaSeries, HistogramSeries, LineStyle
 } from 'lightweight-charts';
 import {
-  TrendingUp, TrendingDown, Eye, Sliders, Maximize2, RefreshCw, Layers, Target, ChevronRight
+  TrendingUp, TrendingDown, Eye, Sliders, Layers, Target, ChevronRight
 } from 'lucide-react';
 import SearchBar from './SearchBar';
 

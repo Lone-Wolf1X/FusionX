@@ -73,19 +73,6 @@ export default function StockDetail({ symbol }: { symbol: string }) {
   const [loading, setLoading] = useState(true);
   const [period, setPeriod] = useState(9999);
   const [inWatchlist, setInWatchlist] = useState(false);
-  const [showSignals, setShowSignals] = useState(false);
-  const chartRef = useRef<HTMLDivElement>(null);
-  const rsiRef = useRef<HTMLDivElement>(null);
-  const macdRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    setLoading(true);
-    getStock(symbol, period)
-      .then(setData)
-      .catch(console.error)
-      .finally(() => setLoading(false));
-  }, [symbol, period]);
-
   // Check watchlist
   useEffect(() => {
     fetch('http://localhost:8001/api/watchlist')
@@ -93,91 +80,6 @@ export default function StockDetail({ symbol }: { symbol: string }) {
       .then((list: string[]) => setInWatchlist(list.includes(symbol)))
       .catch(() => {});
   }, [symbol]);
-
-  useEffect(() => {
-    if (!data || !chartRef.current) return;
-
-    chartRef.current.innerHTML = '';
-    if (rsiRef.current) rsiRef.current.innerHTML = '';
-    if (macdRef.current) macdRef.current.innerHTML = '';
-
-    const opts = {
-      layout: {
-        background: { type: ColorType.Solid, color: '#FFFFFF' },
-        textColor: '#4A6080',
-        fontSize: 12,
-      },
-      grid: { vertLines: { color: '#EBF3FF' }, horzLines: { color: '#EBF3FF' } },
-      crosshair: { mode: CrosshairMode.Normal },
-      rightPriceScale: { borderColor: '#D9E5F5' },
-      timeScale: { borderColor: '#D9E5F5', timeVisible: true },
-    };
-
-    // Main candlestick chart
-    const chart = createChart(chartRef.current, { ...opts, height: 340 });
-    const candleSeries = chart.addSeries(CandlestickSeries, {
-      upColor: '#059669', downColor: '#DC2626',
-      borderUpColor: '#059669', borderDownColor: '#DC2626',
-      wickUpColor: '#059669', wickDownColor: '#DC2626',
-    });
-    candleSeries.setData(
-      data.ohlcv
-        .filter((d, i, arr) => i === 0 || d.time !== arr[i - 1].time)
-        .sort((a, b) => (a.time > b.time ? 1 : -1))
-    );
-
-    // EMAs
-    if (data.indicators.ema9?.length) {
-      const ema9 = chart.addSeries(LineSeries, { color: '#F59E0B', lineWidth: 1, title: 'EMA9' });
-      ema9.setData(data.indicators.ema9);
-    }
-    if (data.indicators.ema21?.length) {
-      const ema21 = chart.addSeries(LineSeries, { color: '#8B5CF6', lineWidth: 1, title: 'EMA21' });
-      ema21.setData(data.indicators.ema21);
-    }
-    if (data.indicators.ema50?.length) {
-      const ema50 = chart.addSeries(LineSeries, { color: '#0284C7', lineWidth: 2, title: 'EMA50' });
-      ema50.setData(data.indicators.ema50);
-    }
-    // Bollinger Bands
-    if (data.indicators.bb_upper?.length) {
-      const bbU = chart.addSeries(LineSeries, { color: 'rgba(2,132,199,0.3)', lineWidth: 1, lineStyle: 2 });
-      bbU.setData(data.indicators.bb_upper);
-      const bbL = chart.addSeries(LineSeries, { color: 'rgba(2,132,199,0.3)', lineWidth: 1, lineStyle: 2 });
-      bbL.setData(data.indicators.bb_lower);
-    }
-
-    chart.timeScale().fitContent();
-
-    // RSI panel
-    if (rsiRef.current && data.indicators.rsi?.length) {
-      const rsiChart = createChart(rsiRef.current, { ...opts, height: 90 });
-      const rsiLine = rsiChart.addSeries(LineSeries, { color: '#D97706', lineWidth: 2 });
-      rsiLine.setData(data.indicators.rsi);
-      const ob = rsiChart.addSeries(LineSeries, { color: '#DC2626', lineWidth: 1, lineStyle: 2 });
-      ob.setData(data.indicators.rsi.map((d: any) => ({ time: d.time, value: 70 })));
-      const os = rsiChart.addSeries(LineSeries, { color: '#059669', lineWidth: 1, lineStyle: 2 });
-      os.setData(data.indicators.rsi.map((d: any) => ({ time: d.time, value: 30 })));
-      rsiChart.timeScale().fitContent();
-    }
-
-    // MACD panel
-    if (macdRef.current && data.indicators.macd?.length) {
-      const macdChart = createChart(macdRef.current, { ...opts, height: 90 });
-      const macdLine = macdChart.addSeries(LineSeries, { color: '#0284C7', lineWidth: 2 });
-      macdLine.setData(data.indicators.macd.map((d: any) => ({ time: d.time, value: d.macd })));
-      const sigLine = macdChart.addSeries(LineSeries, { color: '#DC2626', lineWidth: 1 });
-      sigLine.setData(data.indicators.macd.map((d: any) => ({ time: d.time, value: d.signal })));
-      const hist = macdChart.addSeries(HistogramSeries, { priceFormat: { type: 'price', minMove: 0.01 } });
-      hist.setData(data.indicators.macd.map((d: any) => ({
-        time: d.time, value: d.histogram,
-        color: d.histogram >= 0 ? '#059669' : '#DC2626',
-      })));
-      macdChart.timeScale().fitContent();
-    }
-
-    return () => { chart.remove(); };
-  }, [data]);
 
   const handleToggleWatchlist = async () => {
     const { addToWatchlist, removeFromWatchlist } = await import('../services/api');
