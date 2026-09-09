@@ -44,15 +44,15 @@ export default function Dashboard({ onSelect }: { onSelect: (s: string) => void 
       <div className="stat-row">
         <div className="stat-card">
           <div className="stat-label"><DollarSign size={12} /> Market Turnover</div>
-          <div className="stat-value" style={{ color: 'var(--blue)', fontSize: 22 }}>
-            Rs {(data.total_turnover / 10000000).toFixed(2)}Cr
+          <div className="stat-value" style={{ color: 'var(--blue)', fontSize: 20 }}>
+            Rs {Math.round(data.total_turnover).toLocaleString()}
           </div>
           <div className="stat-sub">Today's estimated turnover</div>
         </div>
         <div className="stat-card">
           <div className="stat-label"><BarChart2 size={12} /> Total Volume</div>
-          <div className="stat-value" style={{ fontSize: 22 }}>
-            {(data.total_volume / 1000).toFixed(1)}k
+          <div className="stat-value" style={{ fontSize: 20 }}>
+            {Math.round(data.total_volume).toLocaleString()}
           </div>
           <div className="stat-sub">Shares traded today</div>
         </div>
@@ -91,7 +91,7 @@ export default function Dashboard({ onSelect }: { onSelect: (s: string) => void 
                   ))}
                 </Pie>
                 <RechartsTooltip
-                  formatter={(v: number) => [`Rs ${(v / 10000000).toFixed(2)}Cr`, 'Turnover']}
+                  formatter={(v: number) => [`Rs ${Math.round(v).toLocaleString()}`, 'Turnover']}
                   contentStyle={{ background: 'white', border: '1px solid var(--border)', borderRadius: 10, fontSize: 12, boxShadow: 'var(--shadow-md)' }}
                 />
                 <Legend
@@ -119,7 +119,7 @@ export default function Dashboard({ onSelect }: { onSelect: (s: string) => void 
                 <RechartsTooltip
                   contentStyle={{ background: 'white', border: '1px solid var(--border)', borderRadius: 10, fontSize: 12, boxShadow: 'var(--shadow-md)' }}
                   labelStyle={{ color: 'var(--text-muted)', fontWeight: 600 }}
-                  formatter={(v: number) => [`${(v / 1000).toFixed(1)}k`, 'Volume']}
+                  formatter={(v: number) => [Math.round(v).toLocaleString(), 'Volume']}
                 />
                 <Area type="monotone" dataKey="volume" stroke="#0284C7" strokeWidth={2.5} fillOpacity={1} fill="url(#volGrad)" />
               </AreaChart>
