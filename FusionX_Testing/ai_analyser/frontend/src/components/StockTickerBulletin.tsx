@@ -49,6 +49,8 @@ export default function StockTickerBulletin({ onSelect }: { onSelect: (symbol: s
 
   // Duplicate stocks list to create a seamless infinite marquee loop
   const displayList = [...stocks, ...stocks];
+  // Calculate super smooth scroll duration: ~4 seconds per stock item (min 180s)
+  const durationSeconds = Math.max(180, Math.round(stocks.length * 4.0));
 
   return (
     <div className="ticker-bulletin-wrap">
@@ -60,7 +62,7 @@ export default function StockTickerBulletin({ onSelect }: { onSelect: (symbol: s
 
       {/* Marquee Track */}
       <div className="ticker-bulletin-container">
-        <div className="ticker-bulletin-track">
+        <div className="ticker-bulletin-track" style={{ animationDuration: `${durationSeconds}s` }}>
           {displayList.map((item, index) => {
             const isUp = (item.change_pct ?? 0) >= 0;
             return (

@@ -9,12 +9,14 @@ import Dashboard from './pages/Dashboard';
 import Watchlist from './pages/Watchlist';
 import Backtester from './pages/Backtester';
 import PortfolioAnalytics from './pages/PortfolioAnalytics';
+import MultiPortfolioManager from './pages/MultiPortfolioManager';
 import SearchBar from './components/SearchBar';
 import StockTickerBulletin from './components/StockTickerBulletin';
 import { Clock } from 'lucide-react';
 
 const PAGE_TITLES: Record<string, string> = {
   dashboard: 'Market Overview',
+  manager: 'Multi-Portfolio Manager',
   suggestions: 'AI Suggestions',
   screener: 'Sector Screener',
   heatmap: 'Market Heatmap',
@@ -75,6 +77,7 @@ export default function App() {
         <main className="page-content">
           <div className="page-fade" key={currentPage}>
             {currentPage === 'dashboard' && <Dashboard onSelect={handleSelect} />}
+            {currentPage === 'manager' && <MultiPortfolioManager onSelect={handleSelect} />}
             {currentPage === 'suggestions' && <Suggestions onSelect={handleSelect} />}
             {currentPage === 'screener' && <Screener onSelect={handleSelect} />}
             {currentPage === 'heatmap' && <Heatmap onSelect={handleSelect} />}

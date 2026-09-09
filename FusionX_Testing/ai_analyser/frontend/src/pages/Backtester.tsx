@@ -8,6 +8,7 @@ import {
   CheckCircle, BarChart2, Zap, Info
 } from 'lucide-react';
 import { useEffect } from 'react';
+import SearchBar from '../components/SearchBar';
 
 const BASE_URL = 'http://localhost:8001';
 
@@ -246,16 +247,36 @@ export default function Backtester({ onSelect }: { onSelect: (s: string) => void
         {/* Stock Selection */}
         <div style={{ marginBottom: 18 }}>
           <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: 0.8, marginBottom: 8 }}>Stock Universe</div>
-          <div style={{ display: 'flex', gap: 10, alignItems: 'center', flexWrap: 'wrap', marginBottom: 10 }}>
+          <div style={{ display: 'flex', gap: 12, alignItems: 'center', flexWrap: 'wrap', marginBottom: 10 }}>
             <label style={{ display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer', fontSize: 13, fontWeight: 500 }}>
               <input type="checkbox" checked={useAll} onChange={e => setUseAll(e.target.checked)} />
               Use all available stocks
             </label>
-            <span style={{ color: 'var(--text-dim)', fontSize: 12 }}>OR enter symbols:</span>
+            
+            {!useAll && (
+              <>
+                <span style={{ color: 'var(--text-dim)', fontSize: 12 }}>Search & Add Stock:</span>
+                <div style={{ width: 250 }}>
+                  <SearchBar
+                    onSelect={(sym) => {
+                      if (useAll) setUseAll(false);
+                      const currentList = symbolsInput
+                        .split(',')
+                        .map((s) => s.trim().toUpperCase())
+                        .filter(Boolean);
+                      if (!currentList.includes(sym)) {
+                        setSymbolsInput(currentList.concat(sym).join(', '));
+                      }
+                    }}
+                  />
+                </div>
+              </>
+            )}
+
             <input
               className="search-input"
               style={{ flex: 1, minWidth: 200 }}
-              placeholder="NABIL, HBL, UPPER, ..."
+              placeholder="Selected Symbols e.g. NABIL, HBL, NTC..."
               value={symbolsInput}
               onChange={e => setSymbolsInput(e.target.value)}
               disabled={useAll}
