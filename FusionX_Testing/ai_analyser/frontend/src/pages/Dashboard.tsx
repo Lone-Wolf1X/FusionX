@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { getDashboardData } from '../services/api';
+import DashboardAdvancedChart from '../components/DashboardAdvancedChart';
 import {
   PieChart, Pie, Cell, Tooltip as RechartsTooltip, Legend,
   AreaChart, Area, XAxis, YAxis, ResponsiveContainer
@@ -66,6 +67,9 @@ export default function Dashboard({ onSelect }: { onSelect: (s: string) => void 
           </div>
         </div>
       </div>
+
+      {/* Interactive NepseAlpha-style Advanced Stock Chart */}
+      <DashboardAdvancedChart onSelect={onSelect} />
 
       {/* Charts row */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 18 }}>
