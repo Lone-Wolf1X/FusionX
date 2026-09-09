@@ -1,6 +1,6 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { getStock } from '../services/api';
-import { createChart, ColorType, CrosshairMode, CandlestickSeries, LineSeries, HistogramSeries } from 'lightweight-charts';
+import ProTradingViewChart from '../components/ProTradingViewChart';
 import { TrendingUp, TrendingDown, BarChart2, Activity, Star, StarOff, Shield, AlertTriangle, Target, ChevronDown, ChevronUp, Calendar } from 'lucide-react';
 
 interface Signal { type: string; text: string; }
@@ -223,9 +223,8 @@ export default function StockDetail({ symbol }: { symbol: string }) {
 
   return (
     <div className="detail-grid">
-      {/* ── Left Panel ── */}
-      <div className="chart-panel">
-        {/* Stock header */}
+      {/* ── Left Panel: TradingView Chart Studio ── */}
+      <div className="chart-panel" style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 10 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
             <div>
@@ -243,36 +242,12 @@ export default function StockDetail({ symbol }: { symbol: string }) {
               {data.sector && <span className="chip chip-sector">{data.sector}</span>}
             </div>
           </div>
-          <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-            <button className={`btn btn-sm ${inWatchlist ? 'btn-success' : 'btn-secondary'}`} onClick={handleToggleWatchlist}>
-              {inWatchlist ? <><StarOff size={13} /> Unwatch</> : <><Star size={13} /> + Watchlist</>}
-            </button>
-            <div className="period-tabs">
-              {PERIODS.map(p => (
-                <button key={p.label} className={`period-tab ${period === p.days ? 'active' : ''}`} onClick={() => setPeriod(p.days)}>
-                  {p.label}
-                </button>
-              ))}
-            </div>
-          </div>
+          <button className={`btn btn-sm ${inWatchlist ? 'btn-success' : 'btn-secondary'}`} onClick={handleToggleWatchlist}>
+            {inWatchlist ? <><StarOff size={13} /> Unwatch</> : <><Star size={13} /> + Watchlist</>}
+          </button>
         </div>
 
-        {/* Main Candlestick Chart */}
-        <div className="chart-container">
-          <div ref={chartRef} className="chart-inner" />
-        </div>
-
-        {/* RSI */}
-        <div className="card" style={{ padding: '8px 14px' }}>
-          <div style={{ fontSize: 10.5, color: 'var(--text-dim)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: 0.8, marginBottom: 4 }}>RSI (14) · Overbought &gt;70 · Oversold &lt;30</div>
-          <div ref={rsiRef} />
-        </div>
-
-        {/* MACD */}
-        <div className="card" style={{ padding: '8px 14px' }}>
-          <div style={{ fontSize: 10.5, color: 'var(--text-dim)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: 0.8, marginBottom: 4 }}>MACD (12, 26, 9)</div>
-          <div ref={macdRef} />
-        </div>
+        <ProTradingViewChart initialSymbol={symbol} onSelect={() => {}} />
       </div>
 
       {/* ── Right Panel ── */}
