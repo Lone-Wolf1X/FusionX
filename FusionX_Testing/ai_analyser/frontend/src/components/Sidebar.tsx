@@ -1,7 +1,8 @@
-import { BarChart2, Zap, TrendingUp, Grid, Activity, Star, LayoutDashboard, FlaskConical, PieChart, Briefcase, BookOpen } from 'lucide-react';
+import { BarChart2, Zap, TrendingUp, Grid, Activity, Star, LayoutDashboard, FlaskConical, PieChart, Briefcase, BookOpen, Wallet } from 'lucide-react';
 
 const navItems = [
   { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
+  { id: 'finance', label: 'Personal Finance', icon: Wallet },
   { id: 'manager', label: 'Portfolio Manager', icon: Briefcase },
   { id: 'journal', label: 'Trading Journal', icon: BookOpen },
   { id: 'suggestions', label: 'AI Suggestions', icon: Zap },

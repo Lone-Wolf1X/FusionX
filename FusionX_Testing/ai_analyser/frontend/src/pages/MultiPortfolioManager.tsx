@@ -54,7 +54,7 @@ export default function MultiPortfolioManager({ onSelect }: { onSelect: (symbol:
 
   // Fetch stock scan data on mount
   useEffect(() => {
-    fetch('http://localhost:8001/api/scan')
+    fetch('http://161.118.189.212/api/scan')
       .then((r) => r.json())
       .then((data: any) => {
         const list = Array.isArray(data) ? data : data?.stocks || [];

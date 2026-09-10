@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API = axios.create({ baseURL: 'http://localhost:8001/api' });
+const API = axios.create({ baseURL: 'http://161.118.189.212/api' });
 
 export const scanStocks = () => API.get('/scan').then(r => r.data);
 export const getStock = (symbol: string, period = 365) => API.get(`/stock/${symbol}?period=${period}`).then(r => r.data);

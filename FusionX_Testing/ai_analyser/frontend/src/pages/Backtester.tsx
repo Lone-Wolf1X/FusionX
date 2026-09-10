@@ -10,7 +10,7 @@ import {
 import { useEffect } from 'react';
 import SearchBar from '../components/SearchBar';
 
-const BASE_URL = 'http://localhost:8001';
+const BASE_URL = 'http://161.118.189.212';
 
 const PRESET_STRATEGIES = [
   {

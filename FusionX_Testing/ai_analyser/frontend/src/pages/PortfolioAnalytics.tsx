@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Activity, BarChart2, Shield, Zap, Plus, X, Info } from 'lucide-react';
 
-const BASE_URL = 'http://localhost:8001';
+const BASE_URL = 'http://161.118.189.212';
 
 function CorrelationGrid({ data, symbols }: { data: any[]; symbols: string[] }) {
   const getColor = (val: number) => {

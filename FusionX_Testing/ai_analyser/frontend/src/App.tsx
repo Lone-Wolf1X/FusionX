@@ -11,6 +11,7 @@ import Backtester from './pages/Backtester';
 import PortfolioAnalytics from './pages/PortfolioAnalytics';
 import MultiPortfolioManager from './pages/MultiPortfolioManager';
 import TradingJournal from './pages/TradingJournal';
+import PersonalFinance from './pages/PersonalFinance';
 import SearchBar from './components/SearchBar';
 import StockTickerBulletin from './components/StockTickerBulletin';
 import AIAssistantModal from './components/AIAssistantModal';
@@ -18,6 +19,7 @@ import { Clock, Bot, Sparkles } from 'lucide-react';
 
 const PAGE_TITLES: Record<string, string> = {
   dashboard: 'Market Overview',
+  finance: 'Personal Finance & Smart Wealth OS',
   manager: 'Multi-Portfolio Manager',
   journal: 'Trading Journal & Behavioral AI',
   suggestions: 'AI Suggestions',
@@ -87,6 +89,7 @@ export default function App() {
         <main className="page-content">
           <div className="page-fade" key={currentPage}>
             {currentPage === 'dashboard' && <Dashboard onSelect={handleSelect} />}
+            {currentPage === 'finance' && <PersonalFinance />}
             {currentPage === 'manager' && <MultiPortfolioManager onSelect={handleSelect} />}
             {currentPage === 'journal' && <TradingJournal onSelect={handleSelect} />}
             {currentPage === 'suggestions' && <Suggestions onSelect={handleSelect} />}

@@ -75,7 +75,7 @@ export default function StockDetail({ symbol }: { symbol: string }) {
 
   // Check watchlist
   useEffect(() => {
-    fetch('http://localhost:8001/api/watchlist')
+    fetch('http://161.118.189.212/api/watchlist')
       .then(r => r.json())
       .then((list: string[]) => setInWatchlist(list.includes(symbol)))
       .catch(() => {});

@@ -3,76 +3,417 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FusionX Trade Management System</title>
-    <!-- Google Fonts: Inter -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <title>FusionX - Private Wealth & Financial Tracker</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="app-container">
         <!-- Sidebar Navigation -->
-        <nav class="sidebar">
-            <div class="logo-container">
-                <div class="logo-icon">FX</div>
-                <h2>FusionX</h2>
+        <aside class="sidebar">
+            <div class="brand">
+                <div class="brand-logo">
+                    <i class="fa-solid fa-vault"></i>
+                </div>
+                <div class="brand-info">
+                    <h2>FusionX</h2>
+                    <span class="brand-tag">Wealth OS</span>
+                </div>
             </div>
+
             <ul class="nav-links">
-                <li class="active"><a href="#" id="nav-dashboard">Dashboard</a></li>
-                <li><a href="#" id="nav-backtesting">Backtesting</a></li>
-                <li><a href="#" id="nav-screener">AI Screener</a></li>
-                <li><a href="#" id="nav-portfolio">Portfolio</a></li>
+                <li class="active" data-tab="dashboard">
+                    <a href="#"><i class="fa-solid fa-chart-pie"></i> <span>Dashboard</span></a>
+                </li>
+                <li data-tab="assets">
+                    <a href="#"><i class="fa-solid fa-wallet"></i> <span>Assets</span></a>
+                </li>
+                <li data-tab="liabilities">
+                    <a href="#"><i class="fa-solid fa-file-invoice-dollar"></i> <span>Liabilities & Debts</span></a>
+                </li>
+                <li data-tab="transactions">
+                    <a href="#"><i class="fa-solid fa-arrow-right-arrow-left"></i> <span>Transactions</span></a>
+                </li>
+                <li data-tab="advisor">
+                    <a href="#"><i class="fa-solid fa-user-doctor"></i> <span>Smart Advisor</span> <span class="badge-pulse">AI</span></a>
+                </li>
             </ul>
-        </nav>
+
+            <div class="sidebar-footer">
+                <div class="privacy-badge">
+                    <i class="fa-solid fa-shield-halved"></i>
+                    <span>100% Private & Local DB</span>
+                </div>
+            </div>
+        </aside>
 
         <!-- Main Content Area -->
         <main class="main-content">
+            <!-- Header Bar -->
             <header class="top-header">
                 <div class="header-title">
-                    <h1>Dashboard</h1>
-                    <p>Welcome back to your trading desk.</p>
+                    <h1 id="page-title">Financial Dashboard</h1>
+                    <p id="page-subtitle">Welcome to your personal wealth management console</p>
                 </div>
-                <div class="server-status" id="server-status">
-                    <span class="status-indicator"></span>
-                    <span class="status-text">Connecting...</span>
+
+                <div class="header-actions">
+                    <button class="btn btn-outline" id="btn-open-asset-modal">
+                        <i class="fa-solid fa-plus"></i> Asset
+                    </button>
+                    <button class="btn btn-outline" id="btn-open-liability-modal">
+                        <i class="fa-solid fa-plus"></i> Liability
+                    </button>
+                    <button class="btn btn-primary" id="btn-open-tx-modal">
+                        <i class="fa-solid fa-arrow-up-down-left-right"></i> Log Transaction
+                    </button>
                 </div>
             </header>
 
-            <section class="dashboard-grid">
-                <!-- Data Card -->
-                <div class="glass-card stat-card">
-                    <h3>Market Status</h3>
-                    <div class="stat-value" id="market-status">Closed</div>
-                    <p class="stat-subtext">Next open at 11:00 AM</p>
+            <!-- TAB 1: OVERVIEW DASHBOARD -->
+            <section class="tab-content active" id="tab-dashboard">
+                <!-- Summary Metrics Grid -->
+                <div class="metrics-grid">
+                    <!-- Net Worth Card -->
+                    <div class="glass-card stat-card glow-card">
+                        <div class="stat-header">
+                            <span class="stat-label">Net Worth</span>
+                            <div class="stat-icon icon-emerald"><i class="fa-solid fa-coins"></i></div>
+                        </div>
+                        <div class="stat-value" id="dash-net-worth">रु/₹ 0</div>
+                        <div class="stat-footer">
+                            <span class="stat-subtext">Total Wealth (Assets - Debts)</span>
+                        </div>
+                    </div>
+
+                    <!-- Total Assets Card -->
+                    <div class="glass-card stat-card">
+                        <div class="stat-header">
+                            <span class="stat-label">Total Assets</span>
+                            <div class="stat-icon icon-blue"><i class="fa-solid fa-chart-line"></i></div>
+                        </div>
+                        <div class="stat-value" id="dash-assets">रु/₹ 0</div>
+                        <div class="stat-footer">
+                            <span class="stat-subtext" id="dash-liquid-assets">Liquid: रु/₹ 0</span>
+                        </div>
+                    </div>
+
+                    <!-- Total Liabilities Card -->
+                    <div class="glass-card stat-card">
+                        <div class="stat-header">
+                            <span class="stat-label">Total Liabilities</span>
+                            <div class="stat-icon icon-rose"><i class="fa-solid fa-hand-holding-dollar"></i></div>
+                        </div>
+                        <div class="stat-value" id="dash-liabilities">रु/₹ 0</div>
+                        <div class="stat-footer">
+                            <span class="stat-subtext">Active Debts & Loans</span>
+                        </div>
+                    </div>
+
+                    <!-- Monthly Savings Rate Card -->
+                    <div class="glass-card stat-card">
+                        <div class="stat-header">
+                            <span class="stat-label">Savings Rate</span>
+                            <div class="stat-icon icon-amber"><i class="fa-solid fa-piggy-bank"></i></div>
+                        </div>
+                        <div class="stat-value" id="dash-savings-rate">0%</div>
+                        <div class="stat-footer">
+                            <span class="stat-subtext" id="dash-net-savings">Net Savings: रु/₹ 0</span>
+                        </div>
+                    </div>
                 </div>
 
-                <div class="glass-card stat-card">
-                    <h3>Total NEPSE Stocks</h3>
-                    <div class="stat-value" id="total-stocks">--</div>
-                    <p class="stat-subtext">Loaded in Database</p>
+                <!-- Charts Row -->
+                <div class="charts-grid">
+                    <div class="glass-card chart-card">
+                        <div class="card-header">
+                            <h3><i class="fa-solid fa-chart-pie"></i> Asset Allocation</h3>
+                        </div>
+                        <div class="chart-box">
+                            <canvas id="assetChart"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="glass-card chart-card">
+                        <div class="card-header">
+                            <h3><i class="fa-solid fa-chart-bar"></i> Monthly Expenses by Category</h3>
+                        </div>
+                        <div class="chart-box">
+                            <canvas id="expenseChart"></canvas>
+                        </div>
+                    </div>
                 </div>
 
-                <div class="glass-card stat-card">
-                    <h3>Backend API</h3>
-                    <div class="stat-value" id="api-status">Pending</div>
-                    <p class="stat-subtext">FastAPI Server</p>
+                <!-- Quick Smart Banner -->
+                <div class="glass-card banner-card" id="dash-advisor-banner">
+                    <div class="banner-content">
+                        <div class="banner-badge" id="dash-health-badge">Score: --</div>
+                        <div class="banner-text">
+                            <h4 id="dash-health-title">Financial Health Status</h4>
+                            <p id="dash-health-tip">Loading smart advisor recommendations...</p>
+                        </div>
+                    </div>
+                    <button class="btn btn-secondary" onclick="switchTab('advisor')">View Full Analysis <i class="fa-solid fa-arrow-right"></i></button>
                 </div>
             </section>
 
-            <!-- Chart/Workspace Placeholder -->
-            <section class="workspace-area">
-                <div class="glass-card main-workspace">
-                    <div class="workspace-header">
-                        <h2>Market Overview</h2>
-                        <div class="actions">
-                            <button class="btn btn-primary">Refresh Data</button>
+            <!-- TAB 2: ASSETS -->
+            <section class="tab-content" id="tab-assets">
+                <div class="section-header">
+                    <h2>Assets & Holdings</h2>
+                    <p>Track cash, bank balances, stocks, real estate, gold, and crypto</p>
+                </div>
+                <div class="glass-card table-card">
+                    <table class="custom-table" id="assets-table">
+                        <thead>
+                            <tr>
+                                <th>Asset Name</th>
+                                <th>Category</th>
+                                <th>Type</th>
+                                <th>Value</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="assets-tbody">
+                            <!-- Populated dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- TAB 3: LIABILITIES & DEBT PAYOFF -->
+            <section class="tab-content" id="tab-liabilities">
+                <div class="section-header">
+                    <h2>Liabilities & Debt Strategy</h2>
+                    <p>Manage loans, credit cards, EMIs and optimize interest reduction</p>
+                </div>
+
+                <div class="glass-card table-card">
+                    <table class="custom-table" id="liabilities-table">
+                        <thead>
+                            <tr>
+                                <th>Liability Name</th>
+                                <th>Category</th>
+                                <th>Interest Rate</th>
+                                <th>Min EMI Payment</th>
+                                <th>Amount Owed</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="liabilities-tbody">
+                            <!-- Populated dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- TAB 4: TRANSACTIONS -->
+            <section class="tab-content" id="tab-transactions">
+                <div class="section-header">
+                    <h2>Transactions & Cash Flow</h2>
+                    <p>Log incomes and monthly expenses</p>
+                </div>
+
+                <div class="glass-card table-card">
+                    <table class="custom-table" id="transactions-table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Type</th>
+                                <th>Category</th>
+                                <th>Description</th>
+                                <th>Amount</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="transactions-tbody">
+                            <!-- Populated dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- TAB 5: SMART ADVISOR HUB -->
+            <section class="tab-content" id="tab-advisor">
+                <div class="section-header">
+                    <h2><i class="fa-solid fa-user-doctor"></i> Smart Financial Doctor & Wealth Strategy</h2>
+                    <p>Intelligent insights, emergency fund check, and debt payoff optimization</p>
+                </div>
+
+                <div class="advisor-grid">
+                    <!-- Health Score Box -->
+                    <div class="glass-card score-box">
+                        <h3>Financial Health Score</h3>
+                        <div class="score-circle-container">
+                            <div class="score-circle" id="adv-score-circle">
+                                <span id="adv-score-num">0</span>
+                                <span class="score-max">/ 100</span>
+                            </div>
+                        </div>
+                        <h4 id="adv-score-grade">Loading...</h4>
+                    </div>
+
+                    <!-- Emergency Fund Box -->
+                    <div class="glass-card emergency-box">
+                        <h3><i class="fa-solid fa-shield-cat"></i> Emergency Fund Readiness</h3>
+                        <div class="emergency-status-badge" id="adv-emerg-badge">Adequate</div>
+                        <p class="emergency-desc" id="adv-emerg-tip">Analyzing liquid assets...</p>
+                        <div class="progress-bar-container">
+                            <div class="progress-bar" id="adv-emerg-bar" style="width: 50%;"></div>
+                        </div>
+                        <div class="progress-labels">
+                            <span>0 Months</span>
+                            <span>3 Months</span>
+                            <span>6+ Months</span>
                         </div>
                     </div>
-                    <div class="chart-container" id="chart-container">
-                        <p class="placeholder-text">Chart will be rendered here...</p>
+                </div>
+
+                <!-- Debt Payoff Strategy Cards -->
+                <div class="advisor-section">
+                    <h3><i class="fa-solid fa-bullseye"></i> Debt Optimization Strategies</h3>
+                    <div class="advice-cards-container" id="adv-debt-cards">
+                        <!-- Populated dynamically -->
+                    </div>
+                </div>
+
+                <!-- Actionable Insights & Warnings -->
+                <div class="advisor-section">
+                    <h3><i class="fa-solid fa-lightbulb"></i> Personalized Wealth Action Cards</h3>
+                    <div class="advice-cards-container" id="adv-action-cards">
+                        <!-- Populated dynamically -->
                     </div>
                 </div>
             </section>
         </main>
+    </div>
+
+    <!-- MODAL 1: ADD ASSET -->
+    <div class="modal-backdrop" id="modal-asset">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3>Add New Asset</h3>
+                <button class="modal-close" class="btn-close-modal">&times;</button>
+            </div>
+            <form id="form-add-asset">
+                <div class="form-group">
+                    <label>Asset Name</label>
+                    <input type="text" id="asset-name" placeholder="e.g. NABIL Bank / NEPSE Stocks" required>
+                </div>
+                <div class="form-group">
+                    <label>Category</label>
+                    <select id="asset-category" required>
+                        <option value="Bank">Bank Account</option>
+                        <option value="Cash">Cash</option>
+                        <option value="Stocks">Stocks / Shares</option>
+                        <option value="Mutual Funds">Mutual Funds / SIP</option>
+                        <option value="Gold">Gold / Precious Metals</option>
+                        <option value="Real Estate">Real Estate</option>
+                        <option value="Crypto">Crypto</option>
+                        <option value="FD">Fixed Deposit</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Value (रु/₹)</label>
+                    <input type="number" step="0.01" id="asset-value" placeholder="0.00" required>
+                </div>
+                <div class="form-group checkbox-group">
+                    <label>
+                        <input type="checkbox" id="asset-liquid" checked>
+                        Liquid Asset (Accessible within 24-48 hours for emergency)
+                    </label>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary btn-close-modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Asset</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL 2: ADD LIABILITY -->
+    <div class="modal-backdrop" id="modal-liability">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3>Add New Liability / Debt</h3>
+                <button class="modal-close btn-close-modal">&times;</button>
+            </div>
+            <form id="form-add-liability">
+                <div class="form-group">
+                    <label>Liability Name</label>
+                    <input type="text" id="liability-name" placeholder="e.g. HBL Credit Card / Home Loan" required>
+                </div>
+                <div class="form-group">
+                    <label>Category</label>
+                    <select id="liability-category" required>
+                        <option value="Credit Card">Credit Card</option>
+                        <option value="Personal Loan">Personal Loan</option>
+                        <option value="Home Loan">Home Loan</option>
+                        <option value="Car Loan">Car / Vehicle Loan</option>
+                        <option value="Personal Debt">Personal Debt / Borrowed</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Amount Owed (रु/₹)</label>
+                    <input type="number" step="0.01" id="liability-amount" placeholder="0.00" required>
+                </div>
+                <div class="form-group">
+                    <label>Annual Interest Rate (%)</label>
+                    <input type="number" step="0.1" id="liability-interest" placeholder="e.g. 18.5" value="0.0">
+                </div>
+                <div class="form-group">
+                    <label>Minimum Monthly EMI (रु/₹)</label>
+                    <input type="number" step="0.01" id="liability-emi" placeholder="0.00" value="0.0">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary btn-close-modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Liability</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL 3: LOG TRANSACTION -->
+    <div class="modal-backdrop" id="modal-tx">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3>Log New Transaction</h3>
+                <button class="modal-close btn-close-modal">&times;</button>
+            </div>
+            <form id="form-add-tx">
+                <div class="form-group">
+                    <label>Type</label>
+                    <select id="tx-type" required>
+                        <option value="expense">Expense (-)</option>
+                        <option value="income">Income (+)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Category</label>
+                    <input type="text" id="tx-category" placeholder="e.g. Salary, Rent, Food, Utilities, Shopping" required>
+                </div>
+                <div class="form-group">
+                    <label>Amount (रु/₹)</label>
+                    <input type="number" step="0.01" id="tx-amount" placeholder="0.00" required>
+                </div>
+                <div class="form-group">
+                    <label>Date</label>
+                    <input type="date" id="tx-date" required>
+                </div>
+                <div class="form-group">
+                    <label>Description</label>
+                    <input type="text" id="tx-desc" placeholder="e.g. Supermarket shopping">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary btn-close-modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Log Transaction</button>
+                </div>
+            </form>
+        </div>
     </div>
 
     <script src="app.js"></script>

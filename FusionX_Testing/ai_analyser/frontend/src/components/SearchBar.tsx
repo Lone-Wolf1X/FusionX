@@ -37,7 +37,7 @@ export default function SearchBar({ onSelect }: { onSelect: (s: string) => void 
 
   // Load live stock list from API
   useEffect(() => {
-    fetch('http://localhost:8001/api/scan')
+    fetch('http://161.118.189.212/api/scan')
       .then((r) => r.json())
       .then((data: any) => {
         const rawList = Array.isArray(data) ? data : data?.stocks || [];

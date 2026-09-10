@@ -1,0 +1,17 @@
+{
+  "name": "fusionx-testing",
+  "version": "2.0.0",
+  "description": "FusionX AI Stock Analyser & Personal Financial Tracker",
+  "main": "run_app.py",
+  "scripts": {
+    "dev": "python3 run_app.py",
+    "start": "python3 run_app.py"
+  },
+  "keywords": [
+    "fusionx",
+    "ai-analyser",
+    "personal-finance"
+  ],
+  "author": "",
+  "license": "ISC"
+}
