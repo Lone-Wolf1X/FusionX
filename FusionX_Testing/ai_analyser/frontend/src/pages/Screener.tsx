@@ -88,6 +88,48 @@ export default function Screener({ onSelect }: { onSelect: (s: string) => void }
         <Filter size={18} /> Screener & Portfolio Setup
       </div>
 
+      {/* AI Natural Language Prompt Screener */}
+      <div style={{ marginBottom: 20, padding: 16, background: 'linear-gradient(135deg, var(--bg-card2) 0%, var(--bg-hover) 100%)', borderRadius: 8, border: '1px solid var(--border)' }}>
+        <div style={{ fontWeight: 700, fontSize: 13.5, color: 'var(--blue)', display: 'flex', alignItems: 'center', gap: 6, marginBottom: 8 }}>
+          🤖 Natural Language AI Screener Query
+        </div>
+        <div style={{ display: 'flex', gap: 10, marginBottom: 10 }}>
+          <input
+            className="search-input"
+            style={{ flex: 1, fontSize: 13 }}
+            placeholder='e.g. "Find Commercial Banks and Hydro stocks with RSI above 50 and positive MACD"'
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                const targetSectors = sectors.filter((s) => e.currentTarget.value.toLowerCase().includes(s.toLowerCase()));
+                if (targetSectors.length > 0) setSelectedSectors(targetSectors);
+                handleRunScan();
+              }
+            }}
+          />
+        </div>
+        <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', alignItems: 'center' }}>
+          <span style={{ fontSize: 11.5, color: 'var(--text-dim)' }}>Sample Prompts:</span>
+          {[
+            'Commercial Banks with bullish trend',
+            'Hydro Power momentum breakout',
+            'Life Insurance value picks',
+          ].map((promptText, idx) => (
+            <button
+              key={idx}
+              className="btn btn-ghost"
+              style={{ fontSize: 11, padding: '3px 8px', background: 'var(--bg-base)', color: 'var(--blue)' }}
+              onClick={() => {
+                const matched = sectors.filter((s) => promptText.toLowerCase().includes(s.toLowerCase()));
+                setSelectedSectors(matched.length > 0 ? matched : sectors.slice(0, 3));
+                handleRunScan();
+              }}
+            >
+              ✨ {promptText}
+            </button>
+          ))}
+        </div>
+      </div>
+
       <div style={{ marginBottom: 20, padding: 16, background: 'var(--bg-base)', borderRadius: 8, border: '1px solid var(--border)' }}>
         <div style={{ fontWeight: 600, marginBottom: 12 }}>Select Your Preferred Sectors</div>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 16 }}>

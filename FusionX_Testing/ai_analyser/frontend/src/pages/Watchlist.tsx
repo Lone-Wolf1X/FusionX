@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
-import { getWatchlist, removeFromWatchlist } from '../services/api';
-import { Star, Trash2, TrendingUp, TrendingDown, ChevronRight, BookOpen } from 'lucide-react';
+import { getWatchlist, removeFromWatchlist, addToWatchlist } from '../services/api';
+import { Star, Trash2, TrendingUp, TrendingDown, ChevronRight, BookOpen, Plus, Layers, Flame, Diamond, Zap } from 'lucide-react';
+import SearchBar from '../components/SearchBar';
 
 interface WatchItem {
   symbol: string;
@@ -13,18 +14,34 @@ interface WatchItem {
   resistance?: number;
 }
 
+const CATEGORIES = [
+  { id: 'all', label: 'All Tracked', icon: Star },
+  { id: 'breakout', label: '🔥 Breakout Candidates', icon: Flame },
+  { id: 'longterm', label: '💎 Long-Term Core', icon: Diamond },
+  { id: 'oversold', label: '🚀 High Growth / Oversold', icon: Zap },
+];
+
 function ScoreRing({ score }: { score?: number }) {
   const s = score ?? 0;
   const color = s >= 70 ? 'var(--green)' : s >= 50 ? 'var(--amber)' : 'var(--red)';
   return (
-    <div style={{
-      width: 44, height: 44, borderRadius: '50%', flexShrink: 0,
-      border: `3px solid ${color}`,
-      background: s >= 70 ? 'var(--green-dim)' : s >= 50 ? 'var(--amber-dim)' : 'var(--red-dim)',
-      display: 'flex', alignItems: 'center', justifyContent: 'center',
-      fontFamily: 'var(--font-mono)', fontWeight: 800, fontSize: 13,
-      color
-    }}>
+    <div
+      style={{
+        width: 44,
+        height: 44,
+        borderRadius: '50%',
+        flexShrink: 0,
+        border: `3px solid ${color}`,
+        background: s >= 70 ? 'var(--green-dim)' : s >= 50 ? 'var(--amber-dim)' : 'var(--red-dim)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        fontFamily: 'var(--font-mono)',
+        fontWeight: 800,
+        fontSize: 13,
+        color,
+      }}
+    >
       {s}
     </div>
   );
@@ -33,57 +50,98 @@ function ScoreRing({ score }: { score?: number }) {
 export default function Watchlist({ onSelect }: { onSelect: (s: string) => void }) {
   const [items, setItems] = useState<WatchItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState('all');
 
   const load = () => {
     setLoading(true);
     fetch('http://localhost:8001/api/watchlist-detail')
-      .then(r => r.json())
-      .then(setItems)
+      .then((r) => r.json())
+      .then((data: any) => {
+        const list = Array.isArray(data) ? data : [];
+        setItems(list);
+      })
       .catch(() => {
-        // Fallback to basic watchlist
         getWatchlist().then((syms: string[]) => setItems(syms.map((s: string) => ({ symbol: s }))));
       })
       .finally(() => setLoading(false));
   };
 
-  useEffect(() => { load(); }, []);
+  useEffect(() => {
+    load();
+  }, []);
+
+  const handleAdd = async (sym: string) => {
+    await addToWatchlist(sym);
+    load();
+  };
 
   const handleRemove = async (sym: string, e: React.MouseEvent) => {
     e.stopPropagation();
     await removeFromWatchlist(sym);
-    setItems(prev => prev.filter(i => i.symbol !== sym));
+    setItems((prev) => prev.filter((i) => i.symbol !== sym));
   };
+
+  // Filter items based on active tab category
+  const filteredItems = items.filter((item) => {
+    if (activeTab === 'all') return true;
+    if (activeTab === 'breakout') return (item.score || 0) >= 65 || (item.change_pct || 0) > 1.5;
+    if (activeTab === 'longterm') return ['Commercial Banks', 'Manufacturing and Processing', 'Others'].includes(item.sector || '');
+    if (activeTab === 'oversold') return (item.change_pct || 0) < 0 || (item.score || 0) < 55;
+    return true;
+  });
 
   if (loading) return <div className="loader-wrap"><div className="spinner" /></div>;
 
   return (
     <div className="page-fade" style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
       {/* Header */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 14 }}>
         <div>
-          <div style={{ fontSize: 22, fontWeight: 800, color: 'var(--text-main)', letterSpacing: -0.5 }}>
-            My Watchlist
+          <div style={{ fontSize: 22, fontWeight: 800, color: 'var(--text-main)', letterSpacing: -0.5, display: 'flex', alignItems: 'center', gap: 8 }}>
+            <Star size={22} color="var(--amber)" fill="var(--amber)" /> Categorized Smart Watchlists
           </div>
           <div style={{ fontSize: 13, color: 'var(--text-dim)', marginTop: 3 }}>
-            {items.length} stock{items.length !== 1 ? 's' : ''} tracked
+            {items.length} total stock{items.length !== 1 ? 's' : ''} tracked across active categories
           </div>
         </div>
-        <span className="chip chip-sector" style={{ fontSize: 12 }}>
-          <Star size={11} /> Personal Watchlist
-        </span>
+
+        {/* Quick Add Stock to Watchlist SearchBar */}
+        <div style={{ width: 280 }}>
+          <SearchBar onSelect={(sym) => handleAdd(sym)} />
+        </div>
       </div>
 
-      {items.length === 0 ? (
+      {/* Category Tabs */}
+      <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+        {CATEGORIES.map((cat) => {
+          const Icon = cat.icon;
+          const isActive = activeTab === cat.id;
+          return (
+            <button
+              key={cat.id}
+              className={`btn ${isActive ? 'btn-primary' : 'btn-secondary'}`}
+              style={{ fontSize: 12, padding: '6px 14px' }}
+              onClick={() => setActiveTab(cat.id)}
+            >
+              <Icon size={14} /> {cat.label}
+            </button>
+          );
+        })}
+      </div>
+
+      {filteredItems.length === 0 ? (
         <div className="card">
           <div className="watchlist-empty">
             <BookOpen size={40} color="var(--border-bright)" />
-            <div style={{ fontWeight: 700, fontSize: 15 }}>Your watchlist is empty</div>
-            <div style={{ fontSize: 13 }}>Visit any stock's detail page and click "+ Add to Watchlist"</div>
+            <div style={{ fontWeight: 700, fontSize: 15 }}>No stocks match this watchlist filter</div>
+            <div style={{ fontSize: 13, color: 'var(--text-dim)', marginTop: 4 }}>
+              Use the search bar above to add stocks directly to your watchlist.
+            </div>
           </div>
         </div>
       ) : (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))', gap: 14 }}>
-          {items.map(item => (
+          {filteredItems.map((item) => (
             <div
               key={item.symbol}
               className="card"
@@ -116,11 +174,11 @@ export default function Watchlist({ onSelect }: { onSelect: (s: string) => void 
               {(item.support || item.resistance) && (
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 12 }}>
                   <div className="rr-item">
-                    <div className="rr-label">Buy Zone</div>
+                    <div className="rr-label">Support (Buy Zone)</div>
                     <div className="rr-value up">Rs {item.support?.toFixed(2) ?? '--'}</div>
                   </div>
                   <div className="rr-item">
-                    <div className="rr-label">Sell Zone</div>
+                    <div className="rr-label">Resistance (Target)</div>
                     <div className="rr-value down">Rs {item.resistance?.toFixed(2) ?? '--'}</div>
                   </div>
                 </div>

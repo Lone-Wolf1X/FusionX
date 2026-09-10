@@ -197,6 +197,65 @@ export default function MultiPortfolioManager({ onSelect }: { onSelect: (symbol:
     URL.revokeObjectURL(url);
   };
 
+  const handleImportCSV = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      try {
+        const text = event.target?.result as string;
+        const lines = text.split('\n').filter((l) => l.trim());
+        const newTxs: Transaction[] = [];
+
+        // Expect CSV format: Symbol, Type (BUY/SELL), Qty, Price, Date
+        lines.forEach((line, i) => {
+          if (i === 0 && line.toLowerCase().includes('symbol')) return; // skip header
+          const parts = line.split(',').map((p) => p.trim());
+          if (parts.length >= 4) {
+            const sym = parts[0].toUpperCase();
+            const type = parts[1].toUpperCase() === 'SELL' ? 'SELL' : 'BUY';
+            const qty = parseFloat(parts[2]) || 0;
+            const price = parseFloat(parts[3]) || 0;
+            const date = parts[4] || new Date().toISOString().split('T')[0];
+
+            if (sym && qty > 0 && price > 0) {
+              newTxs.push({
+                id: `tx-csv-${Date.now()}-${i}`,
+                type,
+                symbol: sym,
+                qty,
+                price,
+                date,
+                includeBrokerFee: true,
+                notes: 'Imported from CSV broker statement',
+              });
+            }
+          }
+        });
+
+        if (newTxs.length > 0) {
+          const updated = portfolios.map((p) => {
+            if (p.id === activePortfolio.id) {
+              return {
+                ...p,
+                transactions: [...p.transactions, ...newTxs],
+              };
+            }
+            return p;
+          });
+          setPortfolios(updated);
+          savePortfolios(updated);
+          alert(`Successfully imported ${newTxs.length} trades from CSV statement!`);
+        } else {
+          alert('No valid trade records found in CSV file. Format: Symbol, Type, Qty, Price, Date');
+        }
+      } catch (err) {
+        alert('Failed to parse CSV file.');
+      }
+    };
+    reader.readAsText(file);
+  };
+
   const handleImportJSON = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -294,8 +353,12 @@ export default function MultiPortfolioManager({ onSelect }: { onSelect: (symbol:
           <button className="btn btn-ghost" onClick={handleExportJSON} title="Export JSON Backup">
             <Download size={16} /> Backup
           </button>
+          <label className="btn btn-ghost" style={{ cursor: 'pointer' }} title="Import CSV Broker Statement">
+            <Upload size={16} /> CSV
+            <input type="file" accept=".csv" style={{ display: 'none' }} onChange={handleImportCSV} />
+          </label>
           <label className="btn btn-ghost" style={{ cursor: 'pointer' }} title="Import JSON Backup">
-            <Upload size={16} />
+            <Upload size={16} /> JSON
             <input type="file" accept=".json" style={{ display: 'none' }} onChange={handleImportJSON} />
           </label>
           {portfolios.length > 1 && (
